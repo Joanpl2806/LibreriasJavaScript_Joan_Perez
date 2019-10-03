@@ -4,27 +4,7 @@ $(function(){
   $('.btn-reinicio').click(function(){
     cambiarColor1($('.main-titulo'))
     llenarTabla()
-    $('img').draggable({
-      start: function(event,ui){
-        leftIni = $(ui.offset.left)[0]
-        topIni = $(ui.offset.top)[0]
-      }
-    })
-    $('img').droppable({
-      drop: function(event,ui){
-        leftFin = $(ui.draggable)[0].offsetLeft
-        topFin = $(ui.draggable)[0].offsetTop
-        if(validarMovimiento() == true){
-          $(ui.draggable).draggable({revert: 'valid'})
-          var img1 = $($(ui.draggable)[0]).attr('src')
-          var img2 = $(this).attr('src')
-          $($(ui.draggable)[0]).attr('src',img2)
-          $(this).attr('src',img1)
-        }else {
-          $(ui.draggable).draggable({revert: 'valid'})
-        }
-      }
-    })
+    iniciarDulces()
   })
 });
 
@@ -59,6 +39,30 @@ function llenarTabla(){
       generarDulce(i)
     }
   }
+}
+
+function iniciarDulces(){
+  $('img').draggable({
+    start: function(event,ui){
+      leftIni = $(ui.offset.left)[0]
+      topIni = $(ui.offset.top)[0]
+    }
+  })
+  $('img').droppable({
+    drop: function(event,ui){
+      leftFin = $(ui.draggable)[0].offsetLeft
+      topFin = $(ui.draggable)[0].offsetTop
+      if(validarMovimiento() == true){
+        $(ui.draggable).draggable({revert: 'valid'})
+        var img1 = $($(ui.draggable)[0]).attr('src')
+        var img2 = $(this).attr('src')
+        $($(ui.draggable)[0]).attr('src',img2)
+        $(this).attr('src',img1)
+      }else {
+        $(ui.draggable).draggable({revert: 'valid'})
+      }
+    }
+  })
 }
 
 function validarMovimiento(){
