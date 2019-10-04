@@ -1,10 +1,12 @@
 var leftIni, leftFin, topIni, topFin
+var puntuacion = 0
 
 $(function(){
   $('.btn-reinicio').click(function(){
     cambiarColor1($('.main-titulo'))
     llenarTabla()
     iniciarDulces()
+    eliminarDulces()
   })
 });
 
@@ -35,7 +37,8 @@ function generarDulce(numCol){
 
 function llenarTabla(){
   for(let i=1; i<8; i++){
-    for(let j=1; j<7; j++){
+    var col = $('.col-'+i).find('img').length
+    for(let j=6; col<j; col++){
       generarDulce(i)
     }
   }
@@ -137,4 +140,48 @@ function movAbajo(){
   }else{
     return false
   }
+}
+
+function eliminarDulces(){
+  var img1, img2, img3, imgCol1, imgCol2, imgCol3, fila1, fila2, fila3
+
+  for(let i=1; i<8; i++){
+    for(let j=0; j<6; j++){
+      imgCol1 = $('.col-'+i).find('img')
+      imgCol2 = $('.col-'+(i-1)).find('img')
+      imgCol3 = $('.col-'+(i+1)).find('img')
+
+      fila1 = $(imgCol1[j]).attr('src')
+      fila2 = $(imgCol2[j]).attr('src')
+      fila3 = $(imgCol3[j]).attr('src')
+
+      img1 = $(imgCol1[j]).attr('src')
+      img2 = $(imgCol1[j-1]).attr('src')
+      img3 = $(imgCol1[j+1]).attr('src')
+
+      if(img1 == img2 && img1 == img3)
+      {
+        $(imgCol1[j]).addClass('eliminar')
+        $(imgCol1[j-1]).addClass('eliminar')
+        $(imgCol1[j+1]).addClass('eliminar')
+      }
+
+      if(fila1 == fila2 && fila1 == fila3){
+        $(imgCol1[j]).addClass('eliminar')
+        $(imgCol2[j]).addClass('eliminar')
+        $(imgCol3[j]).addClass('eliminar')
+      }
+    }
+  }
+  animacionEliminar()
+}
+
+function animacionEliminar(){
+  var puntos = $('.eliminar').length * 10
+  puntuacion = puntuacion + puntos;
+  $("#score-text").text(puntuacion);
+  $('.eliminar').hide('pulsate', 2000, function(){
+    $(this).remove()
+    llenarTabla()
+  })
 }
