@@ -1,19 +1,24 @@
-var leftIni, leftFin, topIni, topFin
+var leftIni, leftFin, topIni, topFin, t, o
 var puntuacion = 0
 var movimientos = 0
 
 $(function(){
   $('.btn-reinicio').click(function(){
-    cambiarColor1($('.main-titulo'))
-    llenarTabla()
-    cronometro()
+    if($('.btn-reinicio').text() == 'Iniciar'){
+      $('.btn-reinicio').text('Reiniciar')
+      cambiarColor1($('.main-titulo'))
+      llenarTabla()
+      cronometro()
+    }else {
+      reiniciarJuego()
+    }
   })
 });
 
 function cambiarColor1(elemento){
   $(elemento).animate({
     color: 'white'
-  }, 1000, function(){
+  }, 500, function(){
     cambiarColor2($(elemento))
   })
 };
@@ -21,7 +26,7 @@ function cambiarColor1(elemento){
 function cambiarColor2(elemento){
   $(elemento).animate({
     color: 'yellow'
-  }, 1000, function(){
+  }, 500, function(){
     cambiarColor1(elemento)
   })
 };
@@ -68,7 +73,7 @@ function iniciarDulces(){
       }
     },
     stop: function(){
-      setTimeout(function(){
+      o = setTimeout(function(){
         eliminarDulces()
       },1000)
     }
@@ -273,4 +278,21 @@ function juegoTerminado(){
       }
     }
   )
+}
+
+function reiniciarJuego(){
+  movimientos = 0
+  puntuacion = 0
+  $('img').remove()
+  $('.juego').remove()
+  $('.time').show()
+  $('.panel-tablero').show()
+  $('.panel-tablero').css({
+      width: '70%',
+      height: '700px'
+  })
+  $('.panel-score').css('width','25%')
+  $('#score-text, #movimientos-text').text('0')
+  $('#timer').text("02:00")
+  $('.btn-reinicio').text('Iniciar')
 }
