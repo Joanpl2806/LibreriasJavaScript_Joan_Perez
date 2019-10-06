@@ -1,10 +1,12 @@
 var leftIni, leftFin, topIni, topFin
 var puntuacion = 0
+var movimientos = 0
 
 $(function(){
   $('.btn-reinicio').click(function(){
     cambiarColor1($('.main-titulo'))
     llenarTabla()
+    cronometro()
   })
 });
 
@@ -30,7 +32,7 @@ function numeroRandom(min, max) {
 
 function generarDulce(numCol){
   var n = numeroRandom(1,5)
-  $('.col-'+numCol).prepend($('<img src="image/'+n+'.png">'))
+  $('.col-'+numCol).prepend($('<img class="elemento" src="image/'+n+'.png">'))
 }
 
 function llenarTabla(){
@@ -40,8 +42,8 @@ function llenarTabla(){
       generarDulce(i)
     }
   }
-  eliminar()
   iniciarDulces()
+  eliminarDulces()
 }
 
 function iniciarDulces(){
@@ -52,18 +54,23 @@ function iniciarDulces(){
     }
   })
   $('img').droppable({
+    accept: 'img',
     drop: function(event,ui){
       leftFin = $(ui.draggable)[0].offsetLeft
       topFin = $(ui.draggable)[0].offsetTop
+      $(ui.draggable).draggable({revert: true})
       if(validarMovimiento() == true){
-        $(ui.draggable).draggable({revert: 'valid'})
         var img1 = $($(ui.draggable)[0]).attr('src')
         var img2 = $(this).attr('src')
         $($(ui.draggable)[0]).attr('src',img2)
         $(this).attr('src',img1)
-      }else {
-        $(ui.draggable).draggable({revert: 'valid'})
+        contarMovimientos()
       }
+    },
+    stop: function(){
+      setTimeout(function(){
+        eliminarDulces()
+      },1000)
     }
   })
 }
@@ -83,7 +90,7 @@ function validarMovimiento(){
 }
 
 function movDerecha(){
-  var left1 = leftIni+110
+  var left1 = leftIni+90
   var left2 = leftIni+260
   var top1 = topIni-50
   var top2 = topIni+132
@@ -98,7 +105,7 @@ function movDerecha(){
 }
 
 function movIzquierda(){
-  var left1 = leftIni-140
+  var left1 = leftIni-160
   var left2 = leftIni+30
   var top1 = topIni-50
   var top2 = topIni+132
@@ -130,8 +137,8 @@ function movArriba(){
 function movAbajo(){
   var left1 = leftIni-50
   var left2 = leftIni+150
-  var top1 = topIni+110
-  var top2 = topIni+260
+  var top1 = topIni+90
+  var top2 = topIni+240
   var leftF1 = leftFin+110
   var topF1 = topFin+110
 
@@ -145,7 +152,7 @@ function movAbajo(){
 function eliminarDulces(){
   var img1, img2, img3, imgCol1, imgCol2, imgCol3, fila1, fila2, fila3
   for(let i=1; i<8; i++){
-    for(let j=0; j<6; j++){
+    for(let j=0; j<7; j++){
       imgCol1 = $('.col-'+i).find('img')
       imgCol2 = $('.col-'+(i-1)).find('img')
       imgCol3 = $('.col-'+(i+1)).find('img')
@@ -172,10 +179,9 @@ function eliminarDulces(){
           $(this).remove()
         })
         $(imgCol3[j]).hide('pulsate',2000, function() {
+          puntuacion = puntuacion + 20;
           $(this).remove()
         })
-        puntuacion = puntuacion + 20;
-        $("#score-text").text(puntuacion);
       }else if(fila1 == fila2 && fila1 == fila3){
         $(imgCol1[j]).hide('pulsate',2000, function() {
           $(this).remove()
@@ -184,10 +190,9 @@ function eliminarDulces(){
           $(this).remove()
         })
         $(imgCol3[j]).hide('pulsate',2000, function() {
+          puntuacion = puntuacion + 10;
           $(this).remove()
         })
-        puntuacion = puntuacion + 10;
-        $("#score-text").text(puntuacion);
       }else if(img1 == img2 && img1 == img3){
         $(imgCol1[j]).hide('pulsate',2000, function() {
           $(this).remove()
@@ -196,16 +201,76 @@ function eliminarDulces(){
           $(this).remove()
         })
         $(imgCol1[j+1]).hide('pulsate',2000, function() {
+          puntuacion = puntuacion + 10;
           $(this).remove()
         })
-        puntuacion = puntuacion + 10;
-        $("#score-text").text(puntuacion);
       }
     }
+    $("#score-text").text(puntuacion);
   }
+  setTimeout(function(){
+    llenarTabla()
+  },100)
 }
 
-function eliminar(){
-  eliminarDulces()
-  setInterval(llenarTabla, 1000)
+function contarMovimientos(){
+  movimientos = movimientos + 1
+  $('#movimientos-text').text(movimientos)
+}
+
+
+function cronometro(){
+  var m = 2
+  var s = 60
+  var t
+  t = setInterval(function(){
+    if(m == 2 && s == 60){
+      m--
+      s--
+      $('#timer').text('0'+m+':'+s)
+    }else if (s > 0 && s > 10) {
+      s--
+      $('#timer').text('0'+m+':'+s)
+    }else if (s > 0 && s <= 10) {
+      s--
+      $('#timer').text('0'+m+':'+'0'+s)
+    }else if (s == 0 && m != 0) {
+      m--
+      s = 59
+      $('#timer').text('0'+m+':'+s)
+    }else{
+      clearInterval(t)
+      juegoTerminado()
+    }
+  },1000)
+}
+
+function juegoTerminado(){
+  $('.panel-tablero').animate(
+    {
+      width: 0,
+      height: 0
+    },{
+      step: function(){
+        $(this).hide('fade', 2000)
+      },
+      queue: false,
+      duration: 2000,
+    }
+  )
+
+  $('.panel-score').animate(
+    {
+      width: '100%'
+    },{
+      duration: 2000,
+      start: function(){
+        $('.time').hide()
+      },
+      complete: function(){
+        $(this).prepend('<div class="juego"></div>')
+        $('.juego').prepend('<h2 class="titulo-over">Juego Terminado</h2>')
+      }
+    }
+  )
 }
