@@ -43,7 +43,7 @@ function generarDulce(numCol){
 function llenarTabla(){
   for(let i=1; i<8; i++){
     var col = $('.col-'+i).find('img').length
-    for(let j=6; col<j; col++){
+    for(let j=7; col<j; col++){
       generarDulce(i)
     }
   }
@@ -213,7 +213,7 @@ function eliminarDulces(){
     }
     $("#score-text").text(puntuacion);
   }
-  setTimeout(function(){
+  o = setTimeout(function(){
     llenarTabla()
   },100)
 }
@@ -245,6 +245,7 @@ function cronometro(){
       $('#timer').text('0'+m+':'+s)
     }else{
       clearInterval(t)
+      clearTimeout(o)
       juegoTerminado()
     }
   },1000)
